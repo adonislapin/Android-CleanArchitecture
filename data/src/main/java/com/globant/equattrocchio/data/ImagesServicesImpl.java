@@ -4,7 +4,10 @@ import com.globant.equattrocchio.data.response.Result;
 import com.globant.equattrocchio.data.service.api.SplashbaseApi;
 import com.globant.equattrocchio.domain.service.ImagesServices;
 
+import java.io.IOException;
+
 import io.reactivex.Observer;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -16,7 +19,7 @@ public class ImagesServicesImpl implements ImagesServices {
     private static final String URL= "http://splashbase.co/";
 
     @Override
-    public void getLatestImages(Observer<Boolean> observer) {
+    public void getLatestImages(final Observer<Object> observer) {
         Retrofit retrofit = new Retrofit.Builder().
                 baseUrl(URL).
                 addConverterFactory(GsonConverterFactory.create())
@@ -24,19 +27,41 @@ public class ImagesServicesImpl implements ImagesServices {
 
         SplashbaseApi api  = retrofit.create(SplashbaseApi.class);
 
-        Call<Result> call = api.getImages();
-
+        Call<ResponseBody> call = api.getImages();
+/*
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
                 //todo: show the response.body() on the ui
+
+                observer.onNext(response.body());
+
+
             }
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
                 //todo: update the UI with a connection error message
+                observer.onError(t);
             }
-        });
+        }); */
+
+
+call.enqueue(new Callback<ResponseBody>() {
+    @Override
+    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        try {
+            observer.onNext(response.body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+    }
+});
 
 
     }
