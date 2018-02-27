@@ -6,6 +6,7 @@ import com.globant.equattrocchio.cleanarchitecture.util.bus.RxBus;
 import com.globant.equattrocchio.cleanarchitecture.mvp.view.ImagesView;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CallServiceButtonObserver;
 import com.globant.equattrocchio.data.ImagesServicesImpl;
+import com.globant.equattrocchio.data.response.Result;
 import com.globant.equattrocchio.domain.GetLatestImagesUseCase;
 
 import io.reactivex.annotations.NonNull;
@@ -23,19 +24,12 @@ public class ImagesPresenter {
         this.getLatestImagesUseCase = getLatestImagesUseCase;
     }
 
-    public void onCountButtonPressed() {
-
-        view.showText(new String(""));//todo: aca va el string que me devuelva el execute del usecase
-
-
-    }
-
     private void onCallServiceButtonPressed() {
 
-        getLatestImagesUseCase.execute(new DisposableObserver<Boolean>() {
+        getLatestImagesUseCase.execute(new DisposableObserver<Object>() {
             @Override
-            public void onNext(@NonNull Boolean aBoolean) {
-                loadFromPreferences();
+            public void onNext(@NonNull Object result) {
+                view.fillImages((Result) result);
             }
 
             @Override
