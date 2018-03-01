@@ -1,5 +1,6 @@
 package com.globant.equattrocchio.data;
 
+import com.globant.equattrocchio.data.response.Image;
 import com.globant.equattrocchio.data.response.Result;
 import com.globant.equattrocchio.data.service.api.SplashbaseApi;
 import com.globant.equattrocchio.domain.service.ImagesServices;
@@ -14,8 +15,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ImagesServicesImpl implements ImagesServices {
 
     private static final String URL= "http://splashbase.co/";
+    private Retrofit retrofit = null;
+    private SplashbaseApi api= null;
+
+    public void init(){
+        if(retrofit == null){
+            retrofit = new Retrofit.Builder().
+                    baseUrl(URL).
+                    addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+
+        if(api == null){
+            api  = retrofit.create(SplashbaseApi.class);
+        }
+    }
 
     @Override
+<<<<<<< Updated upstream
     public void getLatestImages(Observer<Boolean> observer) {
         Retrofit retrofit = new Retrofit.Builder().
                 baseUrl(URL).
@@ -23,6 +40,10 @@ public class ImagesServicesImpl implements ImagesServices {
                 .build();
 
         SplashbaseApi api  = retrofit.create(SplashbaseApi.class);
+=======
+    public void getLatestImages(final Observer<Object> observer) {
+        init();
+>>>>>>> Stashed changes
 
         Call<Result> call = api.getImages();
 
@@ -37,7 +58,23 @@ public class ImagesServicesImpl implements ImagesServices {
                 //todo: update the UI with a connection error message
             }
         });
+    }
 
+    @Override
+    public void getImageForId(final Observer<Object> observer, String id) {
+        init();
+        Call<Image> call = api.getImageForId(id);
 
+        call.enqueue(new Callback<Image>() {
+            @Override
+            public void onResponse(Call<Image> call, Response<Image> response) {
+                observer.onNext(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Image> call, Throwable t) {
+                observer.onError(t);
+            }
+        });
     }
 }
