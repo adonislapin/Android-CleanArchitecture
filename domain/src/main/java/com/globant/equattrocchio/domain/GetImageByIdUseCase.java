@@ -1,20 +1,24 @@
 package com.globant.equattrocchio.domain;
 
+import android.media.Image;
+
 import com.globant.equattrocchio.domain.service.ImagesServices;
 
 import io.reactivex.observers.DisposableObserver;
 
-public class GetLatestImagesUseCase extends UseCase<Object,Void> {
+public class GetImageByIdUseCase extends UseCase<Object, String> {
 
     private ImagesServices imagesServices;
 
-    public GetLatestImagesUseCase(ImagesServices imagesServices) {
+    public GetImageByIdUseCase(ImagesServices imagesServices){
         super();
         this.imagesServices = imagesServices;
     }
 
     @Override
-    void buildUseCaseObservable(DisposableObserver<Object> observer, Void aVoid) {
-        imagesServices.getLatestImages(observer);
+    void buildUseCaseObservable(DisposableObserver<Object> observer, String s) {
+        imagesServices.getImageForId(observer, s);
     }
+
+
 }

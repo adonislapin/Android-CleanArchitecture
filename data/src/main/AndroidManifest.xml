@@ -5,6 +5,12 @@
     <application android:allowBackup="true" android:label="@string/app_name"
         android:supportsRtl="true">
 
+
+        <provider
+          android:authorities="com.globant.equattrocchio.data"
+          android:name=".ImageContentProvider"
+          android:exported="false"/>
+
     </application>
 
 </manifest>
