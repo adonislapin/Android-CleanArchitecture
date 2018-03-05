@@ -1,5 +1,6 @@
 package com.globant.equattrocchio.cleanarchitecture.mvp.view;
 
+import android.content.ContentResolver;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import com.globant.equattrocchio.cleanarchitecture.fragments.DialogFragmentDetai
 import com.globant.equattrocchio.cleanarchitecture.util.bus.RxBus;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CallServiceButtonObserver;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CallServiceByIdObserver;
+import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CursorObserver;
 import com.globant.equattrocchio.data.response.Image;
 import com.globant.equattrocchio.data.response.Result;
 
@@ -65,5 +67,16 @@ public class ImagesView extends ActivityView implements IClickImage {
         if(getContext() != null){
             Toast.makeText(getContext(), getContext().getText(R.string.connection_error), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void getDataFromDb(){
+        RxBus.post(new CursorObserver.CursorAction(getContentResolver()));
+    }
+
+    public ContentResolver getContentResolver(){
+        if(getContext() != null){
+            return getContext().getContentResolver();
+        } else
+            return null;
     }
 }

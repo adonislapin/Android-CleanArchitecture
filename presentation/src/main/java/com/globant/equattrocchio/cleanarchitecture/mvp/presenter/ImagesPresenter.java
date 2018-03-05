@@ -1,16 +1,19 @@
 package com.globant.equattrocchio.cleanarchitecture.mvp.presenter;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.util.Log;
 
 import com.globant.equattrocchio.cleanarchitecture.util.bus.RxBus;
 import com.globant.equattrocchio.cleanarchitecture.mvp.view.ImagesView;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CallServiceButtonObserver;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CallServiceByIdObserver;
+import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.CursorObserver;
 import com.globant.equattrocchio.cleanarchitecture.util.bus.observers.SaveImagesToDBObserver;
 import com.globant.equattrocchio.data.ImagesServicesImpl;
 import com.globant.equattrocchio.data.response.Image;
 import com.globant.equattrocchio.data.response.Result;
+import com.globant.equattrocchio.domain.GetAllSavedImagesUseCase;
 import com.globant.equattrocchio.domain.GetImageByIdUseCase;
 import com.globant.equattrocchio.domain.GetLatestImagesUseCase;
 import com.globant.equattrocchio.domain.SetImagesUseCase;
@@ -26,13 +29,15 @@ public class ImagesPresenter {
     private GetLatestImagesUseCase getLatestImagesUseCase;
     private GetImageByIdUseCase getImageByIdUseCase;
     private SetImagesUseCase setImagesUseCase;
+    private GetAllSavedImagesUseCase getAllSavedImagesUseCase;
 
     public ImagesPresenter(ImagesView view, GetLatestImagesUseCase getLatestImagesUseCase, GetImageByIdUseCase getImageByIdUseCase,
-            SetImagesUseCase setImagesUseCase) {
+            SetImagesUseCase setImagesUseCase, GetAllSavedImagesUseCase getAllSavedImagesUseCase) {
         this.view = view;
         this.getLatestImagesUseCase = getLatestImagesUseCase;
         this.getImageByIdUseCase = getImageByIdUseCase;
         this.setImagesUseCase = setImagesUseCase;
+        this.getAllSavedImagesUseCase = getAllSavedImagesUseCase;
     }
 
     private void onCallServiceButtonPressed() {
@@ -96,6 +101,25 @@ public class ImagesPresenter {
         }, result);
     }
 
+    private void getAllSavedImages(ContentResolver contentResolver){
+        getAllSavedImagesUseCase.execute(new DisposableObserver<Object>() {
+            @Override
+            public void onNext(Object o) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }, contentResolver);
+    }
+
     private void loadFromPreferences(){
        // view.showText("EL TEXTO QUE ME TRAGIA DE LAS PREFERENCES");// todo: traerme el texto de las preferences
     }
@@ -128,6 +152,12 @@ public class ImagesPresenter {
             }
         });
 
+        RxBus.subscribe(activity, new CursorObserver() {
+            @Override
+            public void onEvent(CursorAction value) {
+                getAllSavedImages(value.getContentResolver());
+            }
+        });
     }
 
     public void unregister() {

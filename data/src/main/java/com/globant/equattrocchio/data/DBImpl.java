@@ -1,10 +1,12 @@
 package com.globant.equattrocchio.data;
 
-import android.util.Log;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 
+import com.globant.equattrocchio.data.db.pojo.ImageConctract;
 import com.globant.equattrocchio.data.db.pojo.ImageDAO;
 import com.globant.equattrocchio.data.response.Image;
-import com.globant.equattrocchio.data.response.Result;
 import com.globant.equattrocchio.domain.db.DBInterface;
 
 import java.util.ArrayList;
@@ -42,16 +44,36 @@ public class DBImpl implements DBInterface {
             realm.beginTransaction();
             realm.insert(daos);
             realm.commitTransaction();
-/*
-            RealmQuery<ImageDAO> query = realm.where(ImageDAO.class);
-            RealmResults<ImageDAO> results = query.findAll();
-
-            for(ImageDAO dao : results){
-                Log.d("DAO guardado: ","id: " + dao.id_img);
-            }*/
 
             observer.onNext(true);
         }
     }
+
+    @Override
+    public Object getAllImages() {
+        realm = Realm.getDefaultInstance();
+
+        RealmQuery<ImageDAO> query = realm.where(ImageDAO.class);
+        RealmResults<ImageDAO> results = query.findAll();
+        return results;
+    }
+
+    @Override
+    public void getAllImages(Observer<Object> observer, Object contentResolver) {
+        String[] projection = new String[] {"all"};
+
+        Uri clientesUri = ImageConctract.Images.CONTENT_URI;
+
+        ContentResolver cr =  (ContentResolver)contentResolver;
+
+        Cursor cur = cr.query(clientesUri,
+                projection,
+                null,
+                null,
+                null);
+
+        observer.onNext(cur);
+    }
+
 
 }
