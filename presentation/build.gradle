@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 26
@@ -41,7 +42,14 @@ dependencies {
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    compile 'com.android.support:design:23.1.1'
+
     testCompile 'junit:junit:4.12'
     compile project(path: ':domain')
     compile project(':data')
+
+}
+
+realm {
+    syncEnabled = true
 }

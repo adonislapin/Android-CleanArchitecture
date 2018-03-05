@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.globant.equattrocchio.cleanarchitecture.R;
+import com.globant.equattrocchio.cleanarchitecture.mvp.view.IClickImage;
 import com.globant.equattrocchio.data.response.Image;
 import com.globant.equattrocchio.data.response.Result;
 
@@ -17,6 +18,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private Result result;
     private Context context;
+    private IClickImage iClickImage;
 
     public ImageAdapter(Context context, Result result){
         this.result = result;
@@ -35,13 +37,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(ImageViewHolder holder, int position) {
         Image imgTemp = result.getImages().get(position);
 
+        holder.itemView.setTag(imgTemp.getId());
         holder.id.setText("ID: " + imgTemp.getId());
         Glide.with(context).load(imgTemp.getUrl()).into(holder.img);
-
     }
 
     public void setResult(Result result) {
         this.result = result;
+    }
+
+    public void setiClickImage(IClickImage iClickImage) {
+        this.iClickImage = iClickImage;
     }
 
     @Override
@@ -57,6 +63,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             super(view);
             id = view.findViewById(R.id.txt_id);
             img = view.findViewById(R.id.imgv_img);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String id = "" + (int)v.getTag();
+                    iClickImage.onImageClicked(id);
+                }
+            });
         }
     }
 }
